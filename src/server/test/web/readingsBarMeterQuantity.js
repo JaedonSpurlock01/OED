@@ -103,7 +103,23 @@ mocha.describe('readings API', () => {
 
                 // Add B9 here
 
-                // Add B10 here
+                mocha.it('B10: testing out test', async () => {
+                    // Load the data into the database
+                    await prepareTest(unitDatakWh, conversionDatakWh, meterDatakWh);
+                    // Get the unit ID since the DB could use any value.
+                    const unitId = await getUnitId('BTU');
+                    // Load the expected response data from the corresponding csv file
+                    const expected = await parseExpectedCsv('src/server/test/web/readingsData/expected_bar_ri_15_mu_kWh_gu_BTU_st_-inf_et_inf_bd_1.csv');
+                    // Create a request to the API for unbounded reading times and save the response
+                    const res = await chai.request(app).get(`/api/unitReadings/bar/meters/${METER_ID}`)
+                        .query({
+                            timeInterval: ETERNITY.toString(),
+                            barWidthDays: 13,
+                            graphicUnitId: unitId
+                        });
+                    // Check that the API reading is equal to what it is expected to equal
+                    expectReadingToEqualExpected(res, expected);
+                });
 
                 // Add B11 here
 
